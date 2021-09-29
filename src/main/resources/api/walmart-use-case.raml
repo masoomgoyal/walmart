@@ -1,0 +1,34 @@
+#%RAML 1.0
+title: Walmart Use Case
+
+
+/walmart:
+  /Order:
+    get:
+      queryParameters:
+        usItemId:
+          required: true 
+        quantity:
+          required: true 
+        postalCode:
+          required: true  
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                "Message" : "Order has been sucessfully created. Your Order id is 12345"
+                }
+
+
+                
+                
+
+        
+                
+
+        
+    
+
+

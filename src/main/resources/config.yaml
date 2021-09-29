@@ -1,0 +1,16 @@
+http:
+  host: 'localhost'
+  port: '9091'
+
+db:
+   host: 'localhost'
+   port: '3306'
+   user: 'root'
+   database: 'kcfirstdbschema'
+
+  
+request:
+  host: 'walmart.p.rapidapi.com'
+  port: '9091'
+
+  

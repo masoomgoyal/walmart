@@ -1,0 +1,8 @@
+%dw 2.0
+
+type auto_0304c2e6_04a9_4376_ba0a_84466ec0db41_Input_Payload = {|
+  usItemId: Any, 
+  product_type_id: Any, 
+  quantity: Null
+|}
+

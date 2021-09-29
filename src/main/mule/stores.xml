@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="storesFlow" doc:id="0b8a5844-8552-44a1-bdb3-b9876da2f1cd" >
+		<try doc:name="Try" doc:id="def4748d-f19f-44ff-8abc-468dfbfc0420" >
+			<http:request method="GET" doc:name="Request" doc:id="f3812cc6-53ef-4d3d-8d0b-330f277b6cec" config-ref="HTTP_Request_configuration" path="/stores/list">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"x-rapidapi-key" : "3023a67861msh0eb707c9fd31682p12e9c9jsn4bd95787f3d4",
+	"x-rapidapi-host" : "walmart.p.rapidapi.com"
+}]]]></http:headers>
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"postalCode" : vars.postalCode
+}]]]></http:query-params>
+		</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fa112011-01d4-4885-8ff8-468c76578c6e" >
+					<ee:transform doc:name="Transform Message" doc:id="b38cce2c-9cb0-40fc-aa0f-26102892eed0" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": error.description
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="50572e09-c0c3-40c3-b190-9ce0d25d858c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+	
+	payload.data.storesBySearchTerm.stores map((item,index) ->
+{
+    "address": item.address.address,
+	"distance": item.distance,
+	"city": item.address.city,
+	"state": item.address.state,
+	"country": item.address.country,
+	"postalCode": item.address.postalCode,
+	"store_id": item.id	,
+	"store_name": item.displayName,
+	
+	
+	
+})  orderBy $.distance
+	
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="e60f5c58-b0f6-4173-b34d-b2cb9b5a41cd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"store_id": payload[0].store_id as String,
+	"store_name": payload[0].store_name as String,
+	"address" : payload[0].address as String ++ ", "  ++
+	payload[0].city as String  ++ ", " ++
+	payload[0].state as String  ++ ", " ++
+	payload[0].country as String  ++ "(" ++
+	payload[0].postalCode as String  ++ ")",
+	"store_distance": payload[0].distance as String
+	
+	
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="b950c229-2380-470a-8b03-201f5fe9b570" message="#[payload]"/>
+	</flow>
+</mule>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="implementationFlow" doc:id="ed4eba85-672f-4501-adb1-75fa427f9e04" >
+		<set-variable value="#[attributes.queryParams.quantity as Number]" doc:name="Quantity" doc:id="03bd3433-c34c-4392-b564-7ea2fbbd3794" variableName="Quantity" />
+		<set-variable value="#[attributes.queryParams.postalCode]" doc:name="postalCode" doc:id="e21d253a-a7c3-41d5-9ac0-c44b5a53680a" variableName="postalCode" />
+		<flow-ref doc:name="productFlow" doc:id="8cc14e6b-07c0-4f8c-9ac9-47c8b164d852" name="productFlow"/>
+		<flow-ref doc:name="storesFlow" doc:id="8af030c0-9220-4589-ae75-f50441318cfc" name="storesFlow" target="store_details" />
+		<flow-ref doc:name="db_operations" doc:id="77acadb7-a084-4057-8c5b-9aacfcd674e8" name="db_operations"/>
+	</flow>
+	<flow name="db_operations" doc:id="0304c2e6-04a9-4376-ba0a-84466ec0db41" >
+		<db:insert doc:name="Insert" doc:id="e868bf07-4973-4b33-9c0f-5e1c5bd9a21b" config-ref="Database_Config" target="final_order">
+			<reconnect />
+			<db:sql><![CDATA[insert into walmart(store_id,store_name,store_address,store_distance,product_type_id,quantity) values (:store_id,:store_name,:store_address,:store_distance,:product_type_id,:quantity) ]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	'store_id' : vars.store_details.store_id,
+'store_name' : vars.store_details.store_name,
+'store_address' : vars.store_details.address,
+'store_distance' : vars.store_details.store_distance,
+'product_type_id' : payload.product_type_id,
+'quantity' : payload.quantity
+}]]]></db:input-parameters>
+		</db:insert>
+		<db:select doc:name="Select" doc:id="cc04e673-6bc0-47ae-90af-06f6f1f4d48c" config-ref="Database_Config" target="order_id">
+			<reconnect />
+			<db:sql><![CDATA[select max(order_id) from walmart]]></db:sql>
+		</db:select>
+		<set-payload value='#["Your Order is Confirmed and your order id is: " ++ vars.order_id[0][0] as String]' doc:name="Set Payload" doc:id="60ae63b4-df9e-4864-b507-f92cef7ce759" />
+		<logger level="INFO" doc:name="Logger" doc:id="0486cf2e-eb1b-494f-9c37-4f48166b7b81" />
+	</flow>
+
+</mule>
