@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<flow name="productFlow" doc:id="b816dd9a-f497-4292-bc5a-fc8fcea6e5c5" >
 		<try doc:name="Try" doc:id="0eeca2a9-6cb2-45fb-803c-4a9031433a35" >
-			<http:request method="GET" doc:name="Request" doc:id="0bec3312-52c2-40f3-b983-dcf62e2f020d" config-ref="HTTP_Request_configuration" path="/products/get-details">
+			<http:request method="GET" doc:name="Request" doc:id="0bec3312-52c2-40f3-b983-dcf62e2f020d" path="/products/get-details" config-ref="HTTP_Request_configuration">
 			<http:headers><![CDATA[#[output application/java
 ---
 {

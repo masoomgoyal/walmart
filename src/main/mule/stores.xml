@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="storesFlow" doc:id="0b8a5844-8552-44a1-bdb3-b9876da2f1cd" >
 		<try doc:name="Try" doc:id="def4748d-f19f-44ff-8abc-468dfbfc0420" >
-			<http:request method="GET" doc:name="Request" doc:id="f3812cc6-53ef-4d3d-8d0b-330f277b6cec" config-ref="HTTP_Request_configuration" path="/stores/list">
+			<http:request method="GET" doc:name="Request" doc:id="f3812cc6-53ef-4d3d-8d0b-330f277b6cec" path="/stores/list" config-ref="HTTP_Request_configuration">
 			<http:headers><![CDATA[#[output application/java
 ---
 {
@@ -21,7 +21,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 }]]]></http:query-params>
 		</http:request>
 			<error-handler >
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fa112011-01d4-4885-8ff8-468c76578c6e" >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fa112011-01d4-4885-8ff8-468c76578c6e" type="ANY">
 					<ee:transform doc:name="Transform Message" doc:id="b38cce2c-9cb0-40fc-aa0f-26102892eed0" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0
